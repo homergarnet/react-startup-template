@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Home",
+    "path": "/",
+    "submenu": []
+  },
+  {
+    "name": "Menu",
+    "path": "",
+    "submenu": [
+      {
+        "name": "Submenu 1",
+        "path": "/submenu1"
+      },
+      {
+        "name": "Submenu 2",
+        "path": "/submenu2"
+      },
+      {
+        "name": "Submenu 3",
+        "path": "/submenu3"
+      }
+    ]
+  },
+  {
+    "name": "About",
+    "path": "/about",
+    "submenu": []
+  }
+]

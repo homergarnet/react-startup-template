@@ -1,15 +1,13 @@
-import { useState } from "react";
-import "./App.css";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import Sidebar from "layout/Sidebar/Sidebar";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import useScreenSize from "hooks/useScreenSize";
-function App() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const screenSize = useScreenSize();
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
+const Navbar = () => {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const screenSize = useScreenSize();
+    const toggleSidebar = () => {
+      setIsSidebarOpen(!isSidebarOpen);
+    };
+  
   return (
     <div>
       {/* Navbar */}
@@ -55,25 +53,8 @@ function App() {
         </div>
       </nav>
 
-      {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} />
-
-      {/* Main Content */}
-      <div
-        className="content"
-        style={{
-          marginLeft: isSidebarOpen ? "250px" : "0",
-          transition: "margin-left 0.3s ease",
-        }}
-      >
-        <Routes>
-          <Route path="/" element={<h1>Home Page</h1>} />
-          <Route path="/about" element={<h1>About Page</h1>} />
-          {/* Define more routes as needed */}
-        </Routes>
-      </div>
     </div>
   );
-}
+};
 
-export default App;
+export default Navbar;
