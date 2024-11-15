@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import routes from "../../routes.json";
 import { Link, useLocation } from "react-router-dom";
 import { FaChevronDown, FaChevronRight } from "react-icons/fa"; // For submenu toggle icons
-
+import "./Sidebar.css";
 const Sidebar = ({ isOpen }) => {
   const location = useLocation();
   const [openSubmenus, setOpenSubmenus] = useState({});
@@ -30,7 +30,7 @@ const Sidebar = ({ isOpen }) => {
         backgroundColor: "#39B358FF",
       }}
     >
-      <h3 className="sidebar-header text-white">Sidebar</h3>
+      <h3 className="sidebar-header">Sidebar</h3>
 
       <ul
         className="sidebar-list"
