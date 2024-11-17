@@ -1,77 +1,60 @@
-import { useState } from "react";
+import ClipLoader from "react-spinners/ClipLoader";
+import { Route, Routes } from "react-router-dom";
+import useStore from "./store/store";
+import useAuthContext  from "store/auth/useAuthContext";
 import "./App.css";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import Sidebar from "layout/Sidebar/Sidebar";
-import useScreenSize from "hooks/useScreenSize";
+
+
 function App() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const screenSize = useScreenSize();
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
+  const {
+    loading,
+    setLoading,
+    data,
+    error,
+    fetchData,
+    isClientConnected,
+    setIsClientConnected,
+  } = useStore();
+  const {
+    authLoading
+  } = useAuthContext();
+  // localStorage.setItem(
+  //   "authToken",
+  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiIxIiwiVXNlcm5hbWUiOiJhZG1pbiIsIkZpcnN0TmFtZSI6ImFkbWluIiwiTWlkZGxlTmFtZSI6ImFkbWluIiwiTGFzdE5hbWUiOiJhZG1pbiIsIlVzZXJUeXBlIjoiYWRtaW4iLCJleHAiOjE3MjA1NzU2MzMsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMSJ9.XQPWPvb6_sLQWUCpJEFuaB9io9SIlMfxwLjMI9HNByM"
+  // );
   return (
-    <div>
-      {/* Navbar */}
-      <nav
-        className="navbar navbar-expand-lg navbar-light bg-light"
-        style={{
-          marginLeft: isSidebarOpen ? "250px" : "0",
-          transition: "margin-left 0.3s ease",
-        }}
-      >
-        <Link className="navbar-brand" to="/">
-          My App
-        </Link>
+    <div className="App">
+      {/* {loading && (
+        <div className="spinner-container">
+          <ClipLoader size={50} color={"#123abc"} loading={loading} />
 
-        <button
-          className="navbar-toggler"
-          type="button"
-          onClick={toggleSidebar}
-          data-toggle="collapse"
-          data-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-
-        {/* Navbar links (Home, About) */}
-        <div className="collapse navbar-collapse show" id="navbarNav">
-          <ul className="navbar-nav ml-auto">
-            <li className="nav-item">
-              <Link className="nav-link" to="/">
-                Home
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/about">
-                About
-              </Link>
-            </li>
-            {/* Add other nav items here */}
-          </ul>
+          <p className="please-wait-text">
+            Please wait and will connect <br />
+            you to our Customer Service Representative...
+          </p>
         </div>
-      </nav>
+      )} */}
 
-      {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} />
+      {authLoading && (
+        <div className="spinner-container">
+          <ClipLoader size={50} color={"#123abc"} loading={authLoading} />
+        </div>
+      )}
 
-      {/* Main Content */}
-      <div
-        className="content"
-        style={{
-          marginLeft: isSidebarOpen ? "250px" : "0",
-          transition: "margin-left 0.3s ease",
-        }}
-      >
-        <Routes>
-          <Route path="/" element={<h1>Home Page</h1>} />
-          <Route path="/about" element={<h1>About Page</h1>} />
-          {/* Define more routes as needed */}
-        </Routes>
-      </div>
+      {/* <Routes>
+        <Route path="/" element={<AuthLayout />}>
+          <Route path="login" element={<LoginPage />} />
+          <Route path="connect-csr" element={<ConnectCsr />} />
+          <Route path="client-chat" element={<ClientChat />} />
+        </Route>
+        <Route path="/" element={<ProtectedRoute />}>
+          <Route path="dashboard" element={<DashboardPage />}>
+            <Route path="about" element={<AboutPage />} />
+          </Route>
+          <Route path="chat" element={<AgentChat />} />
+        </Route>
+        <Route path="chats" element={<AgentChat />} />
+      </Routes> */}
     </div>
   );
 }

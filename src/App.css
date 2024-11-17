@@ -1,3 +1,23 @@
-.highlight-sidebar{
-    background-color: red;
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(
+    128,
+    128,
+    128,
+    0.5
+  ); /* Gray background with transparency */
+  z-index: 1000; /* Ensure it's above other content */
+}
+
+.please-wait-text {
+  margin-top: 20;
+  font-size: 20;
+  color: "#123abc";
 }
