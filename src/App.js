@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import useStore from "./store/store";
 import useAuthContext  from "store/auth/useAuthContext";
 import "./App.css";
+import User from "pages/User/User";
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
   // );
   return (
     <div className="App">
+      <User />
       {/* {loading && (
         <div className="spinner-container">
           <ClipLoader size={50} color={"#123abc"} loading={loading} />
