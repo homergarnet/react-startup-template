@@ -1,4 +1,32 @@
-.cursor-pointer{
-    cursor: pointer;
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/Inter-ExtraBold.ttf') format('truetype'); /* Adjust the path accordingly */
 }
 
+body {
+  margin: 0;
+  font-family: 'Inter';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: 'Inter'; 
+}
+
+.custom-swal-popup {
+  width: 1000px;
+  font-size: 16px; /* Adjust font size */
+}
+
+.custom-swal-title {
+  color: #343a40; /* Title color */
+  font-weight: bold; /* Bold title */
+}
+
+.custom-swal-html {
+  text-align: left !important; /* Force left alignment */
+  color: #6c757d;             /* Optional: default text color */
+  font-size: 14px;            /* Optional: adjust font size */
+  line-height: 1.5;           /* Optional: improve readability */
+}
