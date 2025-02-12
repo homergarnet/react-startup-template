@@ -1,52 +1,63 @@
-react folder structure
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+comments to save and search:
 
-root
-│
-├── public                     # Public assets
-│   ├── index.html             # Main HTML file
-│   └── assets                 # Static assets (images, fonts, icons, etc.)
-│
-├── src                        # Main application source code
-│   ├── assets                 # Non-component assets (images, fonts, etc.)
-│   │   └── images
-│   │   └── styles             # Global CSS, SCSS, or theming files
-│   ├── components             # Reusable UI components (buttons, inputs, cards, etc.)
-│   │   └── Button
-│   │       ├── Button.js      # Component logic
-│   │       └── Button.module.css # Component styling
-│   │   └── ...
-│   │
-│   ├── containers             # Page-level components or smart components
-│   │   └── Home
-│   │       ├── Home.js        # Home page logic
-│   │       └── Home.module.css # Home page styling
-│   │   └── ...
-│   │
-│   ├── context                # React Context files
-│   │   └── AuthContext.js     # Example of an authentication context
-│   └── hooks                  # Custom React hooks
-│   │   └── useAuth.js         # Example of an authentication hook
-│   │   └── useFetch.js
-│   └── layout                 # Shared layout components (e.g., header, footer)
-│   │   └── Header
-│   │       ├── Header.js
-│   │       └── Header.module.css
-│   │   └── Footer
-│   │       ├── Footer.js
-│   │       └── Footer.module.css
-│   │   └── ...
-│   │
-│   ├── services               # API service and helper files
-│   │   └── api.js             # Example API calls using fetch or axios
-│   └── store                  # Redux or other state management files
-│       ├── index.js           # Redux store configuration
-│       └── slices             # Redux slices (e.g., authSlice.js, userSlice.js)
-│
-│   ├── App.js                 # Root component
-│   ├── index.js               # Entry point of the application
-│   └── routes                 # Route definitions (React Router configuration)
-│       └── index.js           # Example of a route configuration file
-│
-└── .env                       # Environment variables
-└── package.json               # Project dependencies and scripts
-└── README.md                  # Project documentation
+
+
+when installing lodash in typescript react and you want to use the debounce module,
+you need to install npm i --save-dev @types/lodash.debounce
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+How to remove file turn red when it is a warning only?
+1.) check and copy the eslint.config.js code
+2.) install this package
+npm install eslint eslint-plugin-react @typescript-eslint/eslint-plugin @typescript-eslint/parser --save-dev
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# React + TypeScript + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+
+- Configure the top-level `parserOptions` property like this:
+
+```js
+export default tseslint.config({
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
+```
+
+- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
+- Optionally add `...tseslint.configs.stylisticTypeChecked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+
+```js
+// eslint.config.js
+import react from 'eslint-plugin-react'
+
+export default tseslint.config({
+  // Set the react version
+  settings: { react: { version: '18.3' } },
+  plugins: {
+    // Add the react plugin
+    react,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended rules
+    ...react.configs.recommended.rules,
+    ...react.configs['jsx-runtime'].rules,
+  },
+})
+```
