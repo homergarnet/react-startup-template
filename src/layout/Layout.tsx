@@ -183,7 +183,7 @@ const Layout = () => {
                         marginLeft: "80px",
                       }}
                     >
-                      System / Company
+                      Company Name Here
                     </Typography>
                     <Typography
                       variant="h1"
@@ -194,7 +194,7 @@ const Layout = () => {
                         marginLeft: "80px",
                       }}
                     >
-                      Name
+                      Membership Shopping
                     </Typography>
                     <Typography
                       variant="h1"
@@ -206,7 +206,7 @@ const Layout = () => {
                         marginLeft: "80px",
                       }}
                     >
-                      Here
+                      Web Order Form
                     </Typography>
                   </Box>
                 )}

@@ -63,129 +63,75 @@ export const API_ENDPOINTS = {
   CREATE_USER: "User",
 };
 
-export const skuEnrollmentFields = [
-  { name: "skuNumber", label: "SKU Number", type: "text", disabled: false },
+export const employeeFields = [
   {
-    name: "itemDescription",
-    label: "Item Description",
+    name: "employeeNumber",
+    label: "Employee Number",
     type: "text",
-    disabled: true,
+    disabled: false,
   },
-  { name: "vendorCode", label: "Vendor Code", type: "text", disabled: true },
-  { name: "vendorName", label: "Vendor Name", type: "text", disabled: true },
   {
-    name: "foreignVendorName",
-    label: "Foreign Vendor Name",
+    name: "fullName",
+    label: "Fullname",
     type: "text",
-    disabled: true,
-  },
-  {
-    name: "foreignVendorCode",
-    label: "Foreign Vendor Code",
-    type: "text",
-    disabled: true,
-  },
-  {
-    name: "countryOrigin",
-    label: "Country Origin",
-    type: "text",
-    disabled: true,
-  },
-  { name: "itemStatus", label: "Item Status", type: "text", disabled: true },
-  {
-    name: "shelfLifeWeeks",
-    label: "Shelf Life Weeks",
-    type: "number",
-    disabled: false,
-  },
-  { name: "trigger", label: "Trigger", type: "number", disabled: false },
-  { name: "buildTo", label: "Build To", type: "number", disabled: false },
-  {
-    name: "totalOrderLeadTime",
-    label: "Total Order Lead Time",
-    type: "number",
     disabled: false,
   },
   {
-    name: "cbmPerCase",
-    label: "CBM Per Case",
-    type: "number",
-    disabled: false,
-  },
-  {
-    name: "totalCbmPerContainer",
-    label: "Total CBM Per Container",
-    type: "number",
-    disabled: false,
-  },
-  {
-    name: "tonPerCase",
-    label: "Ton Per Case",
-    type: "number",
-    disabled: false,
-  },
-  { name: "poDay", label: "Po Day", type: "select", disabled: false },
-  { name: "buyer", label: "Buyer", type: "autocomplete", disabled: false },
-  // { name: "orderSpecialist", label: "Order Specialist", type: "autocomplete" },
-  {
-    name: "unitPerCase",
-    label: "Unit Per Case",
-    type: "number",
-    disabled: false,
-  },
-  {
-    name: "casePerPallet",
-    label: "Case Per Pallet",
-    type: "number",
-    disabled: false,
-  },
-  {
-    name: "unitPerPallet",
-    label: "Unit Per Pallet",
-    type: "number",
-    disabled: false,
-  },
-  {
-    name: "totalTonPerContainer",
-    label: "Total Ton Per Container",
-    type: "number",
-    disabled: false,
-  },
-  {
-    name: "noOfPalletsPerContainer",
-    label: "No Of Pallets per Container",
-    type: "number",
-    disabled: false,
-  },
-  {
-    name: "containerStacking",
-    label: "Container Stacking",
+    name: "designation",
+    label: "Designation",
     type: "select",
     disabled: false,
   },
+  { name: "agency", label: "Agency", type: "select", disabled: false },
   {
-    name: "unitsPerContainer",
-    label: "Units Per Container",
-    type: "number",
-    disabled: false,
-  },
-  {
-    name: "containerLoad",
-    label: "Container Load",
+    name: "teamAssignment",
+    label: "Team Assignment",
     type: "select",
     disabled: false,
   },
+];
+
+export const teamFields = [
   {
-    name: "containerSize",
-    label: "Container Size",
+    name: "teamName",
+    label: "Team Name",
     type: "text",
+    fieldTypes: ["", ""],
     disabled: false,
   },
-  { name: "moq", label: "MOQ", type: "number", disabled: false },
   {
-    name: "mixLoadSkus",
-    label: "Mix Load Skus",
-    type: "text",
+    name: "colorCode",
+    label: "Color Code",
+    type: "colorCode",
+    fieldTypes: ["", ""],
+    disabled: false,
+  },
+  {
+    name: "area",
+    label: "Area",
+    type: "select",
+    fieldTypes: ["", ""],
+    disabled: false,
+  },
+  {
+    name: "shift",
+    label: "Shift",
+    type: "select",
+    fieldTypes: ["", ""],
+    disabled: false,
+  },
+  {
+    name: "restDay",
+    label: "Rest Day",
+    type: "buttonGroup",
+    fieldTypes: ["", ""],
+    disabled: false,
+  },
+  {
+    name: "shiftPerRole",
+    label: "Shift Per Role",
+    type: "labelWithText",
+    fieldTypes: ["text", "text"],
     disabled: false,
   },
 ];
@@ -200,19 +146,31 @@ export const skuNavLinks: INavLink[] = [
       />
     ),
     label: "Home",
-    href: "/order-analyst/home",
+    href: "/home",
     role: [1, 2],
   },
   {
     icon: (
       <img
         src={FoodPandaIcon}
-        alt="Sku Enrollment"
+        alt="Enrollment - People"
         style={{ width: "30px", height: "30px" }}
       />
     ),
-    label: "SKU Enrollment",
-    href: "/order-analyst/sku-enrollment",
+    label: "Enrollment - People",
+    href: "/enrollment-people",
+    role: [1, 2],
+  },
+  {
+    icon: (
+      <img
+        src={FoodPandaIcon}
+        alt="Team Masterlist"
+        style={{ width: "30px", height: "30px" }}
+      />
+    ),
+    label: "Team Masterlist",
+    href: "/team-masterlist",
     role: [1, 2],
   },
 
@@ -220,25 +178,12 @@ export const skuNavLinks: INavLink[] = [
     icon: (
       <img
         src={FoodPandaIcon}
-        alt="SKU Master List"
+        alt="Employee Masterlist"
         style={{ width: "30px", height: "30px" }}
       />
     ),
-    label: "SKU Master List",
-    href: "/order-analyst/sku-masterlist",
-    role: [1, 2],
-  },
-
-  {
-    icon: (
-      <img
-        src={FoodPandaIcon}
-        alt="Order Form"
-        style={{ width: "30px", height: "30px" }}
-      />
-    ),
-    label: "Order Form",
-    href: "/order-analyst/order-form",
+    label: "Employee Masterlist",
+    href: "/employee-masterlist",
     role: [1, 2],
   },
 
@@ -257,54 +202,19 @@ export const skuNavLinks: INavLink[] = [
     icon: (
       <img
         src={FoodPandaIcon}
-        alt="Mix Container Summary"
+        alt="Agency"
         style={{ width: "30px", height: "30px" }}
       />
     ),
-    label: "Mix Container Summary",
-    href: "/order-analyst/mix-container-summary",
+    label: "Agency",
+    href: "/agency",
     role: [1, 2],
-  },
-  // {
-  //   icon: (
-  //     <img
-  //       src={FoodPandaIcon}
-  //       alt="With Gatepass"
-  //       style={{ width: "30px", height: "30px" }}
-  //     />
-  //   ),
-  //   label: "PO Summary",
-  //   href: "/order-analyst/po-summary",
-  // },
-  // {
-  //   icon: (
-  //     <img
-  //       src={FoodPandaIcon}
-  //       alt="With Gatepass"
-  //       style={{ width: "30px", height: "30px" }}
-  //     />
-  //   ),
-  //   label: "Simulation Only",
-  //   href: "/order-analyst/simulation-only",
-  //   role: [1,2],
-  // },
-  {
-    icon: (
-      <img
-        src={FoodPandaIcon}
-        alt="With Gatepass"
-        style={{ width: "30px", height: "30px" }}
-      />
-    ),
-    label: "Signup",
-    href: "/signup",
-    role: [1],
   },
 ];
 
-export const ADD_SKU = "Add SKU";
-export const UPDATE_SKU = "Update SKU";
-export const DELETE_SKU = "Delete SKU";
+export const ADD_EMPLOYEE = "Add Employee";
+export const UPDATE_EMPLOYEE = "Update Employee";
+export const DELETE_EMPLOYEE = "Delete Employee";
 export const UPDATED_SKU_MESSAGE = "SKU updated successfully";
 export const DELETED_SKU_MESSAGE = "SKU deleted successfully";
 
