@@ -11,7 +11,7 @@ import { RouterProvider } from "react-router-dom";
 import Router from "./Route/Router";
 function App() {
   const { zLoading } = useSharedStore();
-
+  console.log("environment: ", import.meta.env);
   return (
     <React.Fragment>
       <User />

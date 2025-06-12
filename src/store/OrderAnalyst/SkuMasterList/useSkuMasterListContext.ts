@@ -1,11 +1,19 @@
 // src/store.ts
-import { create } from "zustand";
-import axios, { AxiosError, AxiosRequestConfig } from "axios";
-import { SkuMasterModel } from "../../../types/skumastermodel";
+import create from "zustand";
+import axios, { AxiosError, AxiosRequestConfig, CancelToken } from "axios";
+import {
+  SkuMasterModel,
+  UpdateWorksheetfileOrderingRequest,
+} from "../../../types/skumastermodel";
 import * as APIHelpers from "../../../utils/helpers/APIHelpers";
 import useSharedStore from "../../sharedStore";
 import { SkuEnrollmentFormValues } from "../../../Pages/OrderAnalyst/SkuEnrollment/schema/skuEnrollmentFormSchema";
-import { DELETED_SKU_MESSAGE, UPDATED_SKU_MESSAGE } from "../../../constants/constants";
+import {
+  DELETED_SKU_MESSAGE,
+  ERR_UNEXPECTED_ERROR_MESSAGE,
+  UPDATED_FOR_ORDERING_STATUS_MESSAGE,
+  UPDATED_SKU_MESSAGE,
+} from "../../../constants/constants";
 
 const initialData: SkuEnrollmentFormValues = {
   id: "",
@@ -37,7 +45,7 @@ const initialData: SkuEnrollmentFormValues = {
   containerLoad: "",
   containerSize: "",
   moq: 0,
-  mixLoadSkus: "",
+  mixLoadSkus: [],
 };
 
 //for definining of types
@@ -46,24 +54,47 @@ interface OrderFormState {
   zSkuMasterList: SkuMasterModel[] | null; // You can replace `any` with a more specific type (e.g., `Post[]`) if you know the structure of the data
   zSetSkuMasterList: (zSkuMasterList: SkuMasterModel[]) => Promise<void>;
   zSkuMasterGBBuyerList: SkuMasterModel[] | null;
-  zSetSkuMasterGBBuyerList: (zSkuMasterGBBuyerList: SkuMasterModel[]) => Promise<void>;
+  zSetSkuMasterGBBuyerList: (
+    zSkuMasterGBBuyerList: SkuMasterModel[]
+  ) => Promise<void>;
   zSkuMasterGBVNameList: SkuMasterModel[] | null;
-  zSetSkuMasterGBVNameList: (zSkuMasterGBVNameList: SkuMasterModel[]) => Promise<void>;
+  zSetSkuMasterGBVNameList: (
+    zSkuMasterGBVNameList: SkuMasterModel[]
+  ) => Promise<void>;
+  zSkuMasterGBPSchedList: SkuMasterModel[] | null;
+  zSetSkuMasterGBPSchedList: (
+    zSkuMasterGBPSchedList: SkuMasterModel[]
+  ) => Promise<void>;
   zSkuEnrollmentTab: number;
   zSetSkuEnrollmentTab: (zSkuEnrollmentTab: number) => void;
-  error: string | null;
   zSkuSearchText: string;
   zSetSkuSearchText: (zSkuSearchText: string) => void;
   zIsSkuDialogOpen: boolean; // Tracks the state of the dialog
   zSetSkuDialogOpen: (zIsSkuDialogOpen: boolean) => void;
   zSkuDialogTitle: string;
   zSetSkuDialogTitle: (zSkuDialogTitle: string) => void;
+  zCheckedItemsCache: Record<string, boolean>;
+  zSetCheckedItemsCache: (zCheckedItemsCache: Record<string, boolean>) => void;
+  updateZCheckedItemsCache: (
+    zCheckedItemsCache: Record<string, boolean>
+  ) => void;
+  toggleZCheckedItemsCache: (skuNumber: string, isChecked: boolean) => void;
+  resetZCheckedItemsCache: () => void;
   // fetchData: () => Promise<void>;
   createSkuMasterList: (data: SkuMasterModel) => Promise<void>;
-  getAllSkus: () => Promise<void>;
+  getAllSkus: (
+    forOrderingStatus?: number,
+    groupBy?: string,
+    isPromise?: boolean,
+    cancelToken?: CancelToken
+  ) => Promise<any[]>;
   getAllSkusDetails: (skuNumber: string) => Promise<void>;
   updateSku: (data: SkuMasterModel) => Promise<void>;
-  deleteSku: (id: string) => Promise<void>;
+  deleteSku: (id: string, skuNumber: string) => Promise<void>;
+  bulkInsertMasterlist: (file: File, createdBy: string) => Promise<any>;
+  updateWorksheetfileOrdering: (
+    data: UpdateWorksheetfileOrderingRequest
+  ) => Promise<any>;
   modalData: SkuEnrollmentFormValues;
   setModalData: (data: SkuEnrollmentFormValues) => void;
   clearModalData: () => Promise<void>;
@@ -73,19 +104,43 @@ interface OrderFormState {
 // Create the Zustand store with type annotations
 const useSkuMasterListContext = create<OrderFormState>((set) => ({
   zSkuMasterList: null,
-  zSetSkuMasterList: async (zSkuMasterList: SkuMasterModel[]) => set({ zSkuMasterList }),
+  zSetSkuMasterList: async (zSkuMasterList: SkuMasterModel[]) =>
+    set({ zSkuMasterList }),
   zSkuMasterGBBuyerList: null,
-  zSetSkuMasterGBBuyerList: async (zSkuMasterGBBuyerList: SkuMasterModel[]) => set({ zSkuMasterGBBuyerList }),
+  zSetSkuMasterGBBuyerList: async (zSkuMasterGBBuyerList: SkuMasterModel[]) =>
+    set({ zSkuMasterGBBuyerList }),
   zSkuMasterGBVNameList: null,
-  zSetSkuMasterGBVNameList: async (zSkuMasterGBVNameList: SkuMasterModel[]) => set({ zSkuMasterGBVNameList }),
+  zSetSkuMasterGBVNameList: async (zSkuMasterGBVNameList: SkuMasterModel[]) =>
+    set({ zSkuMasterGBVNameList }),
+  zSkuMasterGBPSchedList: null,
+  zSetSkuMasterGBPSchedList: async (zSkuMasterGBPSchedList: SkuMasterModel[]) =>
+    set({ zSkuMasterGBPSchedList }),
   zSkuEnrollmentTab: 0,
-  zSetSkuEnrollmentTab: (zSkuEnrollmentTab: number) => set({ zSkuEnrollmentTab }),
-  error: null,
-  zSkuSearchText: "",
+  zSetSkuEnrollmentTab: (zSkuEnrollmentTab: number) =>
+    set({ zSkuEnrollmentTab }),
+
   zIsSkuDialogOpen: false, // Initial state is closed
   zSetSkuDialogOpen: (zIsSkuDialogOpen: boolean) => set({ zIsSkuDialogOpen }),
   zSkuDialogTitle: "",
   zSetSkuDialogTitle: (zSkuDialogTitle: string) => set({ zSkuDialogTitle }),
+  zCheckedItemsCache: {},
+  zSetCheckedItemsCache: (zCheckedItemsCache) => set({ zCheckedItemsCache }),
+  updateZCheckedItemsCache: (zCheckedItemsCache) =>
+    set((state) => ({
+      zCheckedItemsCache: {
+        ...state.zCheckedItemsCache,
+        ...zCheckedItemsCache,
+      },
+    })),
+  toggleZCheckedItemsCache: (skuNumber: string, isChecked: boolean) =>
+    set((state) => ({
+      zCheckedItemsCache: {
+        ...state.zCheckedItemsCache,
+        [skuNumber]: isChecked,
+      },
+    })),
+  resetZCheckedItemsCache: () => set({ zCheckedItemsCache: {} }),
+  zSkuSearchText: "",
   zSetSkuSearchText: (zSkuSearchText: string) => set({ zSkuSearchText }),
   modalData: initialData,
   setModalData: (data) => set({ modalData: data }),
@@ -108,10 +163,8 @@ const useSkuMasterListContext = create<OrderFormState>((set) => ({
   //     }
   //   }
   // },
-
-
   createSkuMasterList: async (data: SkuMasterModel): Promise<any> => {
-    const { zSetLoading } = useSharedStore.getState();
+    const { zSetLoading, zSetError } = useSharedStore.getState();
 
     zSetLoading(true); // Start loading
 
@@ -120,196 +173,236 @@ const useSkuMasterListContext = create<OrderFormState>((set) => ({
 
       // Check for specific error in the response
       if (response?.data.ErrorMessage === "Sku already exists!") {
-        set({ error: response?.data.ErrorMessage });
         zSetLoading(false);
         return response?.data.ErrorMessage; // Return the error message as a string
       } else {
-        set({ error: null });
         zSetLoading(false);
         return "Sku created successfully"; // Return success message
       }
     } catch (error: unknown) {
-      zSetLoading(false); // Always stop loading
-
-      if (error instanceof AxiosError) {
-        // If the error is an Axios error, handle it specifically
-        set({ error: error.message });
-        return `Error: ${error.message}`; // Return error message as string
+      if (error instanceof Error) {
+        zSetError(`Error fetching createSkuMasterList: ${error.message}`);
       } else {
-        // Handle other types of errors (e.g., network or unexpected)
-        set({ error: "An unexpected error occurred" });
-        return "An unexpected error occurred"; // Return generic error message
+        zSetError(`${ERR_UNEXPECTED_ERROR_MESSAGE}`);
       }
+    } finally {
+      zSetLoading(false);
     }
   },
 
-  getAllSkus: async () => {
-    const { zSetLoading } = useSharedStore.getState();
-    const { zSetSkuMasterGBBuyerList, zSetSkuMasterGBVNameList } = useSkuMasterListContext.getState();
-    zSetLoading(true);
-    try {
-
-      const response = await APIHelpers.GETALLSKUS();
-      // console.log("response: ", response);
-      set({ zSkuMasterList: response?.data.SkuMasterLists, error: null });
-      zSetLoading(false);
-
-      let tempSkuMasterList: SkuMasterModel[] = [];
-      // Group by 'Buyer'
-      const groupedByBuyer = response?.data.SkuMasterLists.reduce((acc: any, item: SkuMasterModel) => {
-        const { Buyer } = item; // Extract Buyer
-        if (!acc[Buyer]) {
-          acc[Buyer] = []; // Initialize an array for each Buyer
-        }
-        acc[Buyer].push(item); // Push the current item into the Buyer's group
-        return acc;
-      }, {});
-
-      const groupedByVendorName = response?.data.SkuMasterLists.reduce((acc: any, item: SkuMasterModel) => {
-        const { VendorName } = item; // Extract Buyer
-        if (!acc[VendorName]) {
-          acc[VendorName] = []; // Initialize an array for each Buyer
-        }
-        acc[VendorName].push(item); // Push the current item into the Buyer's group
-        return acc;
-      }, {});
-
-      // console.log("groupedByBuyer: ", groupedByBuyer);
-
-      Object.keys(groupedByBuyer).forEach((buyer) => {
-        // console.log(`Buyer: ${buyer}`);
-        // console.log("Items: ", groupedByBuyer[buyer]);
-        tempSkuMasterList.push(...groupedByBuyer[buyer]);
-      });
-
-      zSetSkuMasterGBBuyerList(tempSkuMasterList);
-
-      tempSkuMasterList = [];
-
-      Object.keys(groupedByVendorName).forEach((vendorName) => {
-        // console.log(`Buyer: ${buyer}`);
-        // console.log("Items: ", groupedByBuyer[buyer]);
-        tempSkuMasterList.push(...groupedByVendorName[vendorName]);
-      });
-
-
-      zSetSkuMasterGBVNameList(tempSkuMasterList);
-    } catch (error: unknown) { // Type the error as `unknown` to handle it safely
-
-      if (error instanceof AxiosError) {
-        set({ error: error.message });
-        zSetLoading(false);
-      } else {
-        // Handle other error types (e.g., network errors)
-        set({ error: "An unexpected error occurred" });
-        zSetLoading(false);
-      }
-
+  getAllSkus: async (
+    forOrderingStatus?: number,
+    groupBy?: string,
+    isPromise?: boolean,
+    cancelToken?: CancelToken
+  ): Promise<any> => {
+    const { zSetLoading, zRoleId, zUserEmailAdd, zSetError } =
+      useSharedStore.getState();
+    const {
+      zSetSkuMasterGBBuyerList,
+      zSetSkuMasterGBVNameList,
+      zSetSkuMasterGBPSchedList,
+    } = useSkuMasterListContext.getState();
+    if (!isPromise) {
+      zSetLoading(true);
     }
 
+    try {
+      const response = await APIHelpers.GETALLSKUS(
+        zRoleId,
+        zUserEmailAdd,
+        forOrderingStatus,
+        cancelToken
+      );
+
+      set({ zSkuMasterList: response?.data.SkuMasterLists });
+      let skuMasterList = response?.data.SkuMasterLists as SkuMasterModel[];
+      // Group by 'Buyer' while keeping order
+      const groupedByBuyer = Object.values(
+        skuMasterList.reduce<Record<string, SkuMasterModel[]>>((acc, obj) => {
+          acc[obj.Buyer] = acc[obj.Buyer] || [];
+          acc[obj.Buyer].push(obj);
+          return acc;
+        }, {})
+      ).flat();
+
+      const groupedByVName = Object.values(
+        skuMasterList.reduce<Record<string, SkuMasterModel[]>>((acc, obj) => {
+          acc[obj.VendorName] = acc[obj.VendorName] || [];
+          acc[obj.VendorName].push(obj);
+          return acc;
+        }, {})
+      ).flat();
+
+      const groupedByPSched = Object.values(
+        skuMasterList.reduce<Record<string, SkuMasterModel[]>>((acc, obj) => {
+          acc[obj.PoDay] = acc[obj.PoDay] || [];
+          acc[obj.PoDay].push(obj);
+          return acc;
+        }, {})
+      ).flat();
+
+      // Set the grouped list instead of the original list
+      zSetSkuMasterGBBuyerList(groupedByBuyer);
+      zSetSkuMasterGBVNameList(groupedByVName);
+      zSetSkuMasterGBPSchedList(groupedByPSched);
+      if (groupBy === "Buyer") {
+        return groupedByBuyer;
+      } else if (groupBy === "Vendor Name") {
+        return groupedByVName;
+      } else if (groupBy === "PO Schedule") {
+        return groupedByPSched;
+      } else {
+        console.log("else statement");
+        return response?.data.SkuMasterLists;
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        zSetError(`Error fetching getAllSkus: ${error.message}`);
+      } else {
+        zSetError(`${ERR_UNEXPECTED_ERROR_MESSAGE}`);
+      }
+    } finally {
+      if (!isPromise) {
+        zSetLoading(false);
+      }
+    }
   },
 
   getAllSkusDetails: async (skuNumber: string) => {
-
-    const { zSetLoading } = useSharedStore.getState();
+    const { zSetLoading, zRoleId, zUserEmailAdd, zSetError } =
+      useSharedStore.getState();
     zSetLoading(true);
 
     try {
-
-      const response = await APIHelpers.GETSKUDETAILS(skuNumber);
+      const response = await APIHelpers.GETSKUDETAILS(
+        skuNumber,
+        zRoleId,
+        zUserEmailAdd
+      );
       set({ zSkuMasterList: response?.data });
       zSetLoading(false);
-
-    } catch (error: unknown) { // Type the error as `unknown` to handle it safely
-
-      if (error instanceof AxiosError) {
-        set({ error: error.message });
-        zSetLoading(false);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        zSetError(`Error fetching getAllSkusDetails: ${error.message}`);
       } else {
-        // Handle other error types (e.g., network errors)
-        set({ error: "An unexpected error occurred" });
-        zSetLoading(false);
+        zSetError(`${ERR_UNEXPECTED_ERROR_MESSAGE}`);
       }
-
+    } finally {
+      zSetLoading(false);
     }
-
   },
 
   updateSku: async (data: SkuMasterModel): Promise<any> => {
-
-    const { zSetLoading } = useSharedStore.getState();
+    const { zSetLoading, zSetError } = useSharedStore.getState();
     zSetLoading(true);
 
     try {
-
       const response = await APIHelpers.UPDATESKU(data);
       // Check for specific error in the response
       if (response?.data.IsSuccess === true) {
-        set({ error: null });
         zSetLoading(false);
         return UPDATED_SKU_MESSAGE; // Return success message
       } else {
-        set({ error: response?.data.ErrorMessage });
         zSetLoading(false);
         return response?.data.ErrorMessage; // Return success message
       }
-
-    } catch (error: unknown) { // Type the error as `unknown` to handle it safely
-
-      if (error instanceof AxiosError) {
-        set({ error: error.message });
-        zSetLoading(false);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        zSetError(`Error fetching updateSku: ${error.message}`);
       } else {
-        // Handle other error types (e.g., network errors)
-        set({ error: "An unexpected error occurred" });
-        zSetLoading(false);
+        zSetError(`${ERR_UNEXPECTED_ERROR_MESSAGE}`);
       }
-
+    } finally {
+      zSetLoading(false);
     }
-
   },
 
-  deleteSku: async (id: string) => {
-
-    const { zSetLoading } = useSharedStore.getState();
+  deleteSku: async (id: string, skuNumber: string) => {
+    const { zSetLoading, zSetError } = useSharedStore.getState();
     const { getAllSkus } = useSkuMasterListContext.getState();
     zSetLoading(true);
 
     try {
-
-      const response = await APIHelpers.DELETESKU(id);
+      const response = await APIHelpers.DELETESKU(id, skuNumber);
       console.log("response: ", response?.data);
       // Check for specific error in the response
       if (response?.data.IsSuccess === true) {
         getAllSkus();
-        set({ error: null });
         zSetLoading(false);
         return DELETED_SKU_MESSAGE; // Return success message
       } else {
-        set({ error: response?.data.ErrorMessage });
         zSetLoading(false);
         return response?.data.ErrorMessage; // Return success message
       }
-
-    } catch (error: unknown) { // Type the error as `unknown` to handle it safely
-
-      if (error instanceof AxiosError) {
-        set({ error: error.message });
-        zSetLoading(false);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        zSetError(`Error fetching deleteSku: ${error.message}`);
       } else {
-        // Handle other error types (e.g., network errors)
-        set({ error: "An unexpected error occurred" });
-        zSetLoading(false);
+        zSetError(`${ERR_UNEXPECTED_ERROR_MESSAGE}`);
       }
-
+    } finally {
+      zSetLoading(false);
     }
+  },
 
+  bulkInsertMasterlist: async (file: File): Promise<any> => {
+    const { zSetLoading, zSetError } = useSharedStore.getState();
+
+    zSetLoading(true); // Start loading
+
+    try {
+      const response = await APIHelpers.BIMASTERLIST(file);
+
+      // Check for specific error in the response
+      if (response?.data.ErrorMessage !== "") {
+        zSetLoading(false);
+        return response?.data.ErrorMessage; // Return the error message as a string
+      } else {
+        zSetLoading(false);
+        return "Bulk Insert Successfully"; // Return success message
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        zSetError(`Error fetching bulkInsertMasterlist: ${error.message}`);
+      } else {
+        zSetError(`${ERR_UNEXPECTED_ERROR_MESSAGE}`);
+      }
+    } finally {
+      zSetLoading(false);
+    }
+  },
+
+  updateWorksheetfileOrdering: async (
+    data: UpdateWorksheetfileOrderingRequest
+  ): Promise<any> => {
+    const { zSetLoading, zSetError } = useSharedStore.getState();
+    zSetLoading(true);
+
+    try {
+      const response = await APIHelpers.UPDATEFORORDERINGSTATUS(data);
+      // Check for specific error in the response
+      if (response?.data.IsSuccess === true) {
+        zSetLoading(false);
+        return UPDATED_FOR_ORDERING_STATUS_MESSAGE; // Return success message
+      } else {
+        zSetLoading(false);
+        return response?.data.ErrorMessage; // Return success message
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        zSetError(`Error fetching updateSku: ${error.message}`);
+      } else {
+        zSetError(`${ERR_UNEXPECTED_ERROR_MESSAGE}`);
+      }
+    } finally {
+      zSetLoading(false);
+    }
   },
 
   clearModalData: async () => {
     set({ modalData: initialData });
-  }
-
+  },
 }));
 
 export default useSkuMasterListContext;

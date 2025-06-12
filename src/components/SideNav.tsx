@@ -1,0 +1,957 @@
+import {
+  Box,
+  Collapse,
+  Drawer,
+  Grid,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from "@mui/material";
+import { NavLink, useLocation } from "react-router-dom";
+import {
+  ListAlt as ListAltIcon,
+  ShoppingCartOutlined as ShoppingCartIcon,
+  FileUpload as FileUploadIcon,
+  Payment as PaymentIcon,
+  Assessment as AssessmentIcon,
+  GroupRounded as GroupRoundedIcon,
+  FormatListBulletedRounded as FormatListBulletedRoundedIcon,
+  StorefrontRounded as StorefrontRoundedIcon,
+  DateRangeRounded as DateRangeRoundedIcon,
+  CreateNewFolderRounded as CreateNewFolderRoundedIcon,
+  FolderDelete as FolderDeleteIcon,
+  AssignmentLate as AssignmentLateIcon,
+  ArrowDropUp as ArrowDropUpIcon,
+  ArrowDropDown as ArrowDropDownIcon,
+  PointOfSale as PointOfSaleIcon,
+  Settings as SettingsIcon,
+  Report as ReportIcon,
+  Receipt as ReceiptIcon,
+  Payments as PaymentsIcon,
+  Balance as BalanceIcon,
+  Autorenew as AutoRenewIcon,
+  ConfirmationNumber as ConfirmationNumberIcon,
+  CurrencyExchange as CurrencyExchangeIcon,
+  DirectionsWalk as DirectionsWalkIcon,
+  Badge as BadgeIcon,
+  HomeWork as HomeWorkIcon,
+  EventRepeat as EventRepeatIcon,
+  PublishedWithChanges as PublishedWithChangesIcon,
+  Task as TaskIcon,
+  ContactPage as ContactPageIcon,
+  Summarize as SummarizeIcon,
+  Analytics as AnalyticsIcon,
+} from "@mui/icons-material";
+import { useCallback, useEffect, useState } from "react";
+import { AxiosRequestConfig } from "axios";
+import GrabMartIcon from "../Assets/GrabMartSideNav.png";
+import GrabFoodIcon from "../Assets/GrabFoodSideNav.png";
+import MetromartIcon from "../Assets/MetroMartSideNav.png";
+import FoodPandaIcon from "../Assets/FoodPandaSideNav.png";
+import LazadaIcon from "../Assets/LazadaSideNav.png";
+import ShopeeIcon from "../Assets/ShopeeSideNav.png";
+import PickARooIcon from "../Assets/PickARooSideNav.png";
+import GCashIcon from "../Assets/GCashNav.png";
+import WalkInIcon from "../Assets/WalkIn.png";
+import EmployeeIcon from "../Assets/Employee.png";
+import VolumeShopperIcon from "../Assets/VolumeShopper.png";
+import BankPromosIcon from "../Assets/BankPromos.png";
+import StyledScrollBox from "./ReusableComponents/ScrollBarComponents/StyledScrollBar";
+import StyledIcon from "./ReusableComponents/IconComponents/StyledIcon";
+import api from "../Config/AxiosConfig";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import MailIcon from "@mui/icons-material/Mail";
+import { skuNavLinks } from "../constants/constants";
+import HomeIcon from "@mui/icons-material/Home";
+import NoteAltIcon from "@mui/icons-material/NoteAlt";
+import FolderIcon from "@mui/icons-material/Folder";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import QuizIcon from "@mui/icons-material/Quiz";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
+export interface INavLink {
+  icon: JSX.Element;
+  label: string;
+  href: string;
+  role: number[];
+}
+
+interface SideNavProps {
+  width: number; // Add a width prop
+}
+
+interface UserInfo {
+  Role: string | null | undefined;
+  Club: string | null | undefined;
+}
+// const skuNavLinks: INavLink[] = [
+//   {
+//     icon: <p></p>,
+//     label: "Masterlist",
+//     href: "/order-analyst/sku-masterlist",
+//   },
+//   {
+//     icon: <p></p>,
+//     label: "Enrollment",
+//     href: "/order-analyst/sku-enrollment",
+//   },
+
+//   {
+//     icon: <p></p>,
+//     label: "Order Form",
+//     href: "/order-analyst/order-form",
+//   },
+
+//   {
+//     icon: (
+//       <img
+//         src={FoodPandaIcon}
+//         alt="Mix Container Summary"
+//         style={{ width: "30px", height: "30px" }}
+//       />
+//     ),
+//     label: "Mix Container Summary",
+//     href: "/order-analyst/mix-container-summary",
+//   },
+//   {
+//     icon: (
+//       <img
+//         src={FoodPandaIcon}
+//         alt="PO Summary"
+//         style={{ width: "30px", height: "30px" }}
+//       />
+//     ),
+//     label: "PO Summary",
+//     href: "/order-analyst/po-summary",
+//   },
+//   {
+//     icon: (
+//       <img
+//         src={FoodPandaIcon}
+//         alt="With Gatepass"
+//         style={{ width: "30px", height: "30px" }}
+//       />
+//     ),
+//     label: "With Gatepass",
+//     href: "/order-analyst/with-gatepass",
+//   },
+//   {
+//     icon: <p></p>,
+//     label: "Simulation Only",
+//     href: "/order-analyst/simulation-only",
+//   },
+// ];
+
+// const transactionsNavLinks: INavLink[] = [
+//   {
+//     icon: (
+//       <img
+//         src={GrabMartIcon}
+//         alt="Grab Mart"
+//         style={{ width: "30px", height: "30px" }}
+//       />
+//     ),
+//     label: "Grab Mart",
+//     href: "/treasury/csi/grabmart",
+//   },
+//   {
+//     icon: (
+//       <img
+//         src={GrabFoodIcon}
+//         alt="Grab Food"
+//         style={{ width: "30px", height: "30px" }}
+//       />
+//     ),
+//     label: "Grab Food",
+//     href: "/treasury/csi/grabfood",
+//   },
+//   {
+//     icon: (
+//       <img
+//         src={FoodPandaIcon}
+//         alt="Food Panda"
+//         style={{ width: "30px", height: "30px" }}
+//       />
+//     ),
+//     label: "Food Panda",
+//     href: "/treasury/csi/foodpanda",
+//   },
+//   {
+//     icon: (
+//       <img
+//         src={PickARooIcon}
+//         alt="Pick A Roo Merch"
+//         style={{ width: "30px", height: "30px" }}
+//       />
+//     ),
+//     label: "Pick A Roo Merch",
+//     href: "/treasury/csi/pickaroomerch",
+//   },
+//   {
+//     icon: (
+//       <img
+//         src={PickARooIcon}
+//         alt="Pick A Roo FS"
+//         style={{ width: "30px", height: "30px" }}
+//       />
+//     ),
+//     label: "Pick A Roo FS",
+//     href: "/treasury/csi/pickaroofs",
+//   },
+//   {
+//     icon: (
+//       <img
+//         src={MetromartIcon}
+//         alt="Metro Mart"
+//         style={{ width: "30px", height: "30px" }}
+//       />
+//     ),
+//     label: "MetroMart",
+//     href: "/treasury/csi/metromart",
+//   },
+//   {
+//     icon: (
+//       <img
+//         src={LazadaIcon}
+//         alt="Lazada"
+//         style={{ width: "30px", height: "30px" }}
+//       />
+//     ),
+//     label: "Lazada",
+//     href: "/treasury/csi/lazada",
+//   },
+//   {
+//     icon: (
+//       <img
+//         src={ShopeeIcon}
+//         alt="Shopee"
+//         style={{ width: "30px", height: "30px" }}
+//       />
+//     ),
+//     label: "Shopee",
+//     href: "/treasury/csi/shopee",
+//   },
+//   {
+//     icon: (
+//       <img
+//         src={GCashIcon}
+//         alt="GCash"
+//         style={{ width: "30px", height: "30px" }}
+//       />
+//     ),
+//     label: "GCash",
+//     href: "/treasury/csi/gcash",
+//   },
+//   {
+//     icon: <ConfirmationNumberIcon sx={{ fontSize: "30px" }} />,
+//     label: "UB Pizza Voucher",
+//     href: "/treasury/csi/ubpizzavoucher",
+//   },
+//   {
+//     icon: <CurrencyExchangeIcon sx={{ fontSize: "27px" }} />,
+//     label: "UB Rebate Issuance",
+//     href: "/treasury/csi/ubrebateissuance",
+//   },
+//   {
+//     icon: <PublishedWithChangesIcon sx={{ fontSize: "30px" }} />,
+//     label: "UB PV Issuance",
+//     href: "/treasury/csi/ubpvissuance",
+//   },
+//   {
+//     icon: <AutoRenewIcon sx={{ fontSize: "32px" }} />,
+//     label: "UB Renewal",
+//     href: "/treasury/csi/ubrenewal",
+//   },
+//   {
+//     icon: <DirectionsWalkIcon sx={{ fontSize: "32px" }} />,
+//     label: "Walk-In",
+//     href: "/treasury/csi/walkin",
+//   },
+//   {
+//     icon: <BadgeIcon sx={{ fontSize: "30px" }} />,
+//     label: "Employee",
+//     href: "/treasury/csi/employee",
+//   },
+//   {
+//     icon: <HomeWorkIcon sx={{ fontSize: "30px" }} />,
+//     label: "Others",
+//     href: "/treasury/csi/others",
+//   },
+
+//   // { icon: <img src={VolumeShopperIcon} alt="Others" style={{ width: '30px', height: '30px' }} />, label: 'Others', href: '/treasury/csi/volumeshopper' },
+//   // { icon: <img src={BankPromosIcon} alt="BankPromos" style={{ width: '30px', height: '30px' }} />, label: 'Bank Promos', href: '/treasury/csi/bankpromos' },
+// ];
+
+// const reportsNavLinks: INavLink[] = [
+//   {
+//     icon: (
+//       <img
+//         src={FoodPandaIcon}
+//         alt="Order Form"
+//         style={{ width: "30px", height: "30px" }}
+//       />
+//     ),
+//     label: "Order Form",
+//     href: "/order-analyst/order-form",
+//   },
+//   {
+//     icon: <ReportIcon sx={{ fontSize: "30px" }} />,
+//     label: "Exception Reports",
+//     href: "/reports/exception-report",
+//   },
+// ];
+
+// const maintenanceNavLinks: INavLink[] = [
+//   {
+//     icon: <GroupRoundedIcon sx={{ fontSize: "30px" }} />,
+//     label: "User",
+//     href: "/system-admin/user",
+//   },
+//   {
+//     icon: <ListAltIcon sx={{ fontSize: "30px" }} />,
+//     label: "Logs",
+//     href: "/system-admin/logs",
+//   },
+// ];
+
+const SideNav: React.FC<SideNavProps> = ({ width }) => {
+  const location = useLocation();
+  const getRoleId = window.localStorage.getItem("roleId");
+  const [skuDropdownValue, setSkuDropdownValue] = useState(false);
+  const [orderDropdownValue, setOrderDropdownValue] = useState(false);
+  const [maintenanceDropdownValue, setMaintenanceDropdownValue] =
+    useState(false);
+  const [paymentReconDropdownValue, setPaymentReconDropdownValue] =
+    useState(false);
+  const [userInfo, setUserInfo] = useState<UserInfo>({} as UserInfo);
+
+  const userName = window.localStorage.getItem("userName");
+  const getClub = window.localStorage.getItem("club");
+  const treasuryReportsToShow = [
+    "Weekly Delivery Reports",
+    "Generated Invoice Reports",
+    "Exception Reports",
+    "UnionBank Invoice Reports",
+    "Walk-In Invoice Reports",
+    "UnionBank PV Issuance Reports",
+    "UnionBank Renewal Reports",
+  ];
+  const accountingReportsToShow = [
+    "Weekly Delivery Reports",
+    "Generated Invoice Reports",
+    "Exception Reports",
+    "Payment Recon Reports",
+    "Balances Details Reports",
+    "UnionBank Invoice Reports",
+    "Walk-In Invoice Reports",
+    "UnionBank PV Issuance Reports",
+    "UnionBank Renewal Reports",
+  ];
+
+  let roleId = 0;
+  if (getRoleId !== null) {
+    roleId = parseInt(getRoleId, 10);
+  }
+
+  let club = 0;
+  if (getClub !== null) {
+    club = parseInt(getClub, 10);
+  }
+
+  // const handleSkuChange = () => {
+  //   setSkuDropdownValue((prevValue) => !prevValue);
+  // };
+
+  // const handleOrderChange = () => {
+  //   setOrderDropdownValue((prevValue) => !prevValue);
+  // };
+
+  // const handleMaintenanceChange = () => {
+  //   setMaintenanceDropdownValue((prevValue) => !prevValue);
+  // };
+
+  // const handlePaymentReconChange = () => {
+  //   setPaymentReconDropdownValue((prevValue) => !prevValue);
+  // };
+
+  // const fetchUserInfo = useCallback(async () => {
+  //   try {
+  //     const formData = new FormData();
+  //     if (userName !== null) {
+  //       formData.append("username", userName);
+  //     }
+  //     const config: AxiosRequestConfig = {
+  //       method: "POST",
+  //       url: `/Auth/GetUserInfo`,
+  //       data: formData,
+  //     };
+
+  //     await api(config)
+  //       .then(async (response) => {
+  //         // setUserInfo(response.data);
+  //         //to remove later
+  //         setUserInfo({
+  //           Role: "Order Analyst",
+  //           Club: "Chess Club",
+  //         });
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching data:", error);
+  //         //to remove later
+  //         setUserInfo({
+  //           Role: "Order Analyst",
+  //           Club: "Chess Club",
+  //         });
+  //       });
+  //   } catch (error) {
+  //     console.error("Error fetching user info:", error);
+  //   }
+  // }, [, userName]);
+
+  // useEffect(() => {
+  //   if (userName !== null) {
+  //     fetchUserInfo();
+  //   }
+  // }, [fetchUserInfo, userName]);
+
+  // const filteredTreasuryReportsNavLinks = reportsNavLinks.filter((link) =>
+  //   treasuryReportsToShow.includes(link.label)
+  // );
+
+  // const filteredAccountingReportsNavLinks = reportsNavLinks.filter((link) =>
+  //   accountingReportsToShow.includes(link.label)
+  // );
+
+  // const filteredTransactionsNavLinks =
+  //   club === 217
+  //     ? transactionsNavLinks
+  //     : transactionsNavLinks.filter(
+  //         (link) => link.label !== "Lazada" && link.label !== "Shopee"
+  //       );
+
+  // const filteredskuNavLinks =
+  //   club === 217
+  //     ? skuNavLinks
+  //     : skuNavLinks.filter(
+  //         (link) => link.label !== "Lazada" && link.label !== "Shopee"
+  //       );
+
+  return (
+    <>
+      <Drawer
+        anchor="left"
+        open
+        variant="persistent"
+        sx={{
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: `${width}px`,
+            backgroundColor: "#F2F2F2",
+            overflowX: "hidden",
+            border: "none",
+            //boxShadow: '6px 9px 8px -1px rgba(0,0,0,0.3)', // Adjust the horizontal offset here
+          },
+        }}
+      >
+        <Grid
+          container
+          spacing={8}
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Grid item>
+            <Box
+              sx={{
+                textAlign: "center",
+                color: "#1C2C5A",
+                marginTop: "10px",
+              }}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  fontSize: "70px",
+                  fontFamily: "Arial",
+                  fontStyle: "italic",
+                  fontWeight: "bold",
+                }}
+              >
+                S&R
+              </Typography>
+              <Typography
+                variant="h1"
+                sx={{
+                  marginTop: "-19px",
+                  fontSize: "15px",
+                  fontFamily: "Arial",
+                }}
+              >
+                Membership Shopping
+              </Typography>
+              <Typography
+                variant="h1"
+                sx={{
+                  marginTop: "20px",
+                  fontSize: "25px",
+                  fontFamily: "Inter",
+                  fontWeight: "900",
+                  paddingLeft: "5px",
+                  paddingRight: "-2px",
+                }}
+              >
+                Web Order Form
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
+        <StyledScrollBox
+          sx={{
+            overflowY: "auto",
+            height: "calc(100vh - 160px)",
+            scrollbarWidth: "thin",
+          }}
+        >
+          {/* previous dev sidenav links */}
+          {/* <List>
+            {roleId === 2 ? (
+              <Box>
+                {userInfo.Role === "Order Analyst" ? (
+                  <Box>
+                    <ListItemButton
+                      component={NavLink}
+                      to={"order-analyst/dashboard-order-analyst"}
+                      className="link"
+                      onClick={() => {
+                        handleSkuChange();
+                      }}
+                      sx={{
+                        marginLeft: "20px",
+                        marginRight: "20px",
+                        marginTop: "25px",
+                        backgroundColor: skuDropdownValue
+                          ? "#1C2C5A"
+                          : "#F2F2F2",
+                        borderRadius: "25px",
+                        boxShadow: skuDropdownValue
+                          ? "0px 7px 5px -1px rgba(0,0,0,0.5)"
+                          : "",
+                        "&:hover": {
+                          backgroundColor: skuDropdownValue
+                            ? "#15294D"
+                            : "#C5C5C5",
+                          borderColor: skuDropdownValue ? "#15294D" : "#9E9E9E",
+                          boxShadow: skuDropdownValue
+                            ? "0px 7px 5px -1px rgba(0,0,0,0.5)"
+                            : "",
+                        },
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          color: skuDropdownValue ? "#FFFFFF" : "#1C2C5A",
+                        }}
+                      >
+                        <AnalyticsIcon sx={{ fontSize: "30px" }} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={"SKU"}
+                        disableTypography
+                        sx={{
+                          color: skuDropdownValue ? "#FFFFFF" : "#1C2C5A",
+                          paddingLeft: "8px",
+                          marginLeft: "-25px",
+                          fontFamily: "Inter",
+                          fontWeight: "bold",
+                          fontSize: "15px",
+                        }}
+                      />
+                      <StyledIcon
+                        style={{
+                          transform: `rotate(${skuDropdownValue ? 360 : 0}deg)`,
+                        }}
+                      >
+                        {skuDropdownValue ? (
+                          <ArrowDropDownIcon
+                            sx={{
+                              color: skuDropdownValue ? "#FFFFFF" : "#1C2C5A",
+                              fontSize: "30px",
+                            }}
+                          />
+                        ) : (
+                          <ArrowDropUpIcon
+                            sx={{
+                              color: skuDropdownValue ? "#FFFFFF" : "#1C2C5A",
+                              fontSize: "30px",
+                            }}
+                          />
+                        )}
+                      </StyledIcon>
+                    </ListItemButton>
+                    <Collapse
+                      in={skuDropdownValue}
+                      timeout="auto"
+                      unmountOnExit
+                    >
+                      {filteredskuNavLinks.map((skuNavLinks, index) => (
+                        <ListItemButton
+                          key={`transactionsNavLink-${index}`}
+                          component={NavLink}
+                          to={skuNavLinks.href}
+                          style={{
+                            backgroundColor:
+                              location.pathname === skuNavLinks.href
+                                ? "#D9D9D9"
+                                : "inherit",
+                            marginTop: "5px",
+                          }}
+                          className="link"
+                          sx={{
+                            marginLeft: "20px",
+                            marginRight: "20px",
+                            borderRadius: "25px",
+                            height: "35px",
+                          }}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              color:
+                                location.pathname === skuNavLinks.href
+                                  ? "#1C2C5A"
+                                  : "#1C2C5A",
+                              marginLeft: "5px",
+                            }}
+                          >
+                            {skuNavLinks.icon}
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={skuNavLinks.label}
+                            disableTypography
+                            sx={{
+                              color:
+                                location.pathname === skuNavLinks.href
+                                  ? "#1C2C5A"
+                                  : "#1C2C5A",
+                              paddingLeft: "8px",
+                              marginLeft: "-30px",
+                              fontFamily: "Inter !important",
+                              fontWeight: "bold",
+                              fontSize: "14px",
+                            }}
+                          />
+                        </ListItemButton>
+                      ))}
+                    </Collapse>
+
+                    <ListItemButton
+                      onClick={() => {
+                        handleOrderChange();
+                      }}
+                      sx={{
+                        marginLeft: "20px",
+                        marginRight: "20px",
+                        marginTop: "15px",
+                        backgroundColor: orderDropdownValue
+                          ? "#1C2C5A"
+                          : "#F2F2F2",
+                        borderRadius: "25px",
+                        boxShadow: orderDropdownValue
+                          ? "0px 7px 5px -1px rgba(0,0,0,0.5)"
+                          : "",
+                        "&:hover": {
+                          backgroundColor: orderDropdownValue
+                            ? "#15294D"
+                            : "#C5C5C5",
+                          borderColor: orderDropdownValue
+                            ? "#15294D"
+                            : "#9E9E9E",
+                          boxShadow: orderDropdownValue
+                            ? "0px 7px 5px -1px rgba(0,0,0,0.5)"
+                            : "",
+                        },
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          color: orderDropdownValue ? "#FFFFFF" : "#1C2C5A",
+                        }}
+                      >
+                        <AssignmentLateIcon sx={{ fontSize: "33px" }} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={"Order"}
+                        disableTypography
+                        sx={{
+                          color: orderDropdownValue ? "#FFFFFF" : "#1C2C5A",
+                          paddingLeft: "8px",
+                          marginLeft: "-25px",
+                          fontFamily: "Inter",
+                          fontWeight: "bold",
+                          fontSize: "15px",
+                        }}
+                      />
+                      <StyledIcon
+                        style={{
+                          transform: `rotate(${
+                            orderDropdownValue ? 360 : 0
+                          }deg)`,
+                        }}
+                      >
+                        {orderDropdownValue ? (
+                          <ArrowDropDownIcon
+                            sx={{
+                              color: orderDropdownValue ? "#FFFFFF" : "#1C2C5A",
+                              fontSize: "30px",
+                            }}
+                          />
+                        ) : (
+                          <ArrowDropUpIcon
+                            sx={{
+                              color: orderDropdownValue ? "#FFFFFF" : "#1C2C5A",
+                              fontSize: "30px",
+                            }}
+                          />
+                        )}
+                      </StyledIcon>
+                    </ListItemButton>
+                    <Collapse
+                      in={orderDropdownValue}
+                      timeout="auto"
+                      unmountOnExit
+                    >
+                      {filteredTreasuryReportsNavLinks.map(
+                        (reportsNavLinks, index) => (
+                          <ListItemButton
+                            key={`transactionsNavLink-${index}`}
+                            component={NavLink}
+                            to={reportsNavLinks.href}
+                            style={{
+                              backgroundColor:
+                                location.pathname === reportsNavLinks.href
+                                  ? "#D9D9D9"
+                                  : "inherit",
+                              marginTop: "5px",
+                            }}
+                            className="link"
+                            sx={{
+                              marginLeft: "20px",
+                              marginRight: "20px",
+                              borderRadius: "25px",
+                            }}
+                          >
+                            <ListItemIcon
+                              sx={{
+                                color:
+                                  location.pathname === reportsNavLinks.href
+                                    ? "#1C2C5A"
+                                    : "#1C2C5A",
+                                marginLeft: "5px",
+                              }}
+                            >
+                              {reportsNavLinks.icon}
+                            </ListItemIcon>
+                            <ListItemText
+                              primary={reportsNavLinks.label}
+                              disableTypography
+                              sx={{
+                                color:
+                                  location.pathname === reportsNavLinks.href
+                                    ? "#1C2C5A"
+                                    : "#1C2C5A",
+                                paddingLeft: "8px",
+                                marginLeft: "-30px",
+                                fontFamily: "Inter !important",
+                                fontWeight: "bold",
+                                fontSize: "14px",
+                              }}
+                            />
+                          </ListItemButton>
+                        )
+                      )}
+                    </Collapse>
+                  </Box>
+                ) : (
+                  ""
+                )}
+              </Box>
+            ) : (
+              <Box>
+                <ListItemButton
+                  onClick={() => {
+                    handleMaintenanceChange();
+                  }}
+                  sx={{
+                    marginLeft: "20px",
+                    marginRight: "20px",
+                    marginTop: "15px",
+                    backgroundColor: maintenanceDropdownValue
+                      ? "#1C2C5A"
+                      : "#F2F2F2",
+                    borderRadius: "25px",
+                    boxShadow: maintenanceDropdownValue
+                      ? "0px 7px 5px -1px rgba(0,0,0,0.5)"
+                      : "",
+                    "&:hover": {
+                      backgroundColor: maintenanceDropdownValue
+                        ? "#15294D"
+                        : "#C5C5C5",
+                      borderColor: maintenanceDropdownValue
+                        ? "#15294D"
+                        : "#9E9E9E",
+                      boxShadow: maintenanceDropdownValue
+                        ? "0px 7px 5px -1px rgba(0,0,0,0.5)"
+                        : "",
+                    },
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      color: maintenanceDropdownValue ? "#FFFFFF" : "#1C2C5A",
+                    }}
+                  >
+                    <SettingsIcon sx={{ fontSize: "33px" }} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={"Maintenance"}
+                    disableTypography
+                    sx={{
+                      color: maintenanceDropdownValue ? "#FFFFFF" : "#1C2C5A",
+                      paddingLeft: "8px",
+                      marginLeft: "-25px",
+                      fontFamily: "Inter",
+                      fontWeight: "bold",
+                      fontSize: "15px",
+                    }}
+                  />
+                  <StyledIcon
+                    style={{
+                      transform: `rotate(${
+                        maintenanceDropdownValue ? 360 : 0
+                      }deg)`,
+                    }}
+                  >
+                    {maintenanceDropdownValue ? (
+                      <ArrowDropDownIcon
+                        sx={{
+                          color: maintenanceDropdownValue
+                            ? "#FFFFFF"
+                            : "#1C2C5A",
+                          fontSize: "30px",
+                        }}
+                      />
+                    ) : (
+                      <ArrowDropUpIcon
+                        sx={{
+                          color: maintenanceDropdownValue
+                            ? "#FFFFFF"
+                            : "#1C2C5A",
+                          fontSize: "30px",
+                        }}
+                      />
+                    )}
+                  </StyledIcon>
+                </ListItemButton>
+                <Collapse
+                  in={maintenanceDropdownValue}
+                  timeout="auto"
+                  unmountOnExit
+                >
+                  {maintenanceNavLinks.map((maintenanceNavLinks, index) => (
+                    <ListItemButton
+                      key={`transactionsNavLink-${index}`}
+                      component={NavLink}
+                      to={maintenanceNavLinks.href}
+                      style={{
+                        backgroundColor:
+                          location.pathname === maintenanceNavLinks.href
+                            ? "#D9D9D9"
+                            : "inherit",
+                        marginTop: "5px",
+                      }}
+                      className="link"
+                      sx={{
+                        marginLeft: "20px",
+                        marginRight: "20px",
+                        borderRadius: "25px",
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          color:
+                            location.pathname === maintenanceNavLinks.href
+                              ? "#1C2C5A"
+                              : "#1C2C5A",
+                          marginLeft: "5px",
+                        }}
+                      >
+                        {maintenanceNavLinks.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={maintenanceNavLinks.label}
+                        disableTypography
+                        sx={{
+                          color:
+                            location.pathname === maintenanceNavLinks.href
+                              ? "#1C2C5A"
+                              : "#1C2C5A",
+                          paddingLeft: "8px",
+                          marginLeft: "-30px",
+                          fontFamily: "Inter !important",
+                          fontWeight: "bold",
+                          fontSize: "14px",
+                        }}
+                      />
+                    </ListItemButton>
+                  ))}
+                </Collapse>
+              </Box>
+            )}
+          </List> */}
+          <List>
+            {skuNavLinks.map((row, index) => {
+              if (row.role.includes(roleId)) {
+                return (
+                  <ListItem key={row.label} disablePadding>
+                    <ListItemButton
+                      key={`transactionsNavLink-${index}`}
+                      component={NavLink}
+                      to={row.href}
+                      className="link"
+                    >
+                      <ListItemIcon>
+                        {index === 0 ? (
+                          <HomeIcon />
+                        ) : index === 1 ? (
+                          <NoteAltIcon />
+                        ) : index === 2 ? (
+                          <FolderIcon />
+                        ) : index === 3 ? (
+                          <InventoryIcon />
+                        ) : index === 4 ? (
+                          <AssessmentIcon />
+                        ) : index === 5 ? (
+                          <SummarizeIcon />
+                        ) : index === 6 ? (
+                          <QuizIcon />
+                        ) : index === 7 ? (
+                          <HowToRegIcon />
+                        ) : (
+                          <></>
+                        )}
+                      </ListItemIcon>
+                      <ListItemText primary={row.label} />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              }
+            })}
+          </List>
+        </StyledScrollBox>
+      </Drawer>
+    </>
+  );
+};
+
+export default SideNav;

@@ -1,0 +1,34 @@
+export default interface IOrderFormDetails {
+    SkuNumber: string;
+    ItemDescription: string;
+    VendorCode: string;
+    VendorName: string;
+    ForeignVendorCode: string;
+    ForeignVendorName: string;
+    CountryOrigin: string;
+    ItemStatus: string;
+    ShelfLifeWeeks: number;
+    Trigger: number;
+    BuildTo: number;
+    TotalOrderLeadTime: number;
+    CbmPerCase: number;
+    TotalCbmPerContainer: number;
+    TonPerCase: number;
+    PoDay: string;
+    Buyer: string;
+    UnitPerCase: number;
+    CasePerPallet: number;
+    UnitPerPallet: number;
+    TotalTonPerContainer: number;
+    NoOfPalletsPerContainer: number;
+    ContainerStacking: string;
+    UnitsPerContainer: number;
+    ContainerLoad: string;
+    ContainerSize: string;
+    Moq: number;
+    MixLoadSkus: string;
+    CreatedOn: string;
+    CreatedBy: string;
+    ModifiedOn: string;
+    ModifiedBy: string;
+}
