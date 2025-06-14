@@ -5,6 +5,9 @@ import {
   Route,
 } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
+import React from "react";
+
+const Page404 = React.lazy(() => import("../pages/Page404"));
 
 const Router = createBrowserRouter(
   createRoutesFromElements(
@@ -13,7 +16,7 @@ const Router = createBrowserRouter(
         path=""
         element={
           <Suspense fallback={<div>Loading...</div>}>
-            {/* <LoginPage /> */}
+            <Page404 />
           </Suspense>
         }
       />

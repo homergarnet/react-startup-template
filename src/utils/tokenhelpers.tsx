@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import useSharedStore from "../store/sharedStore";
+import useSharedStore from "../store/shareStore";
 // Check if a token is expired
 
 // Define the expected token payload structure
