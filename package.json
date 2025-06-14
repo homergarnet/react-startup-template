@@ -23,7 +23,16 @@
     "tailwindcss": "^4.1.10",
     "zod": "^3.23.8",
     "zustand": "^4.5.4",
-    "axios": "^1.5.1"
+    "axios": "^1.5.1",
+    "@hookform/resolvers": "^3.9.1",
+    "js-cookie": "^3.0.5",
+    "lodash": "^4.17.21",
+    "react-hook-form": "^7.54.0",
+    "react-spinners": "^0.13.8",
+    "react-toastify": "^10.0.6",
+    "sweetalert2": "^11.14.5",
+    "use-debounce": "^10.0.3",
+    "universal-cookie": "^6.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
