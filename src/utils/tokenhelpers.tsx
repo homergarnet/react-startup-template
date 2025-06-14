@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-
+import useSharedStore from "../store/sharedStore";
 // Check if a token is expired
 
 // Define the expected token payload structure
@@ -30,7 +30,7 @@ export const isTokenExpired = (token: string): boolean => {
 
 export const isAuthenticated = (): boolean => {
   const token = localStorage.getItem("authToken");
-//   const { zSetUserEmailAdd, zSetRoleId } = useSharedStore.getState();
+  const { zSetUserEmailAdd, zSetRoleId } = useSharedStore.getState();
 
   if (token) {
     // console.log("isTokenExpired(token): ", isTokenExpired(token));
@@ -44,8 +44,8 @@ export const isAuthenticated = (): boolean => {
       // Example: window.location.href = '/login';
       return false;
     }
-    // zSetUserEmailAdd(localStorage.getItem("userEmailAdd") as string);
-    // zSetRoleId(localStorage.getItem("roleId") as string);
+    zSetUserEmailAdd(localStorage.getItem("userEmailAdd") as string);
+    zSetRoleId(localStorage.getItem("roleId") as string);
     return true; // Token is valid and not expired
   }
 
