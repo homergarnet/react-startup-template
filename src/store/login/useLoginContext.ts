@@ -8,6 +8,8 @@ import { isAuthenticated } from "../../utils/tokenhelpers";
 interface LoginFormState {
   zIsAuthenticated: boolean | null;
   zSetIsAuthenticated: (zIsAuthenticated: boolean) => void;
+  zJwtToken: string | null;
+  zSetJwtToken: (zIsAuthenticated: string) => void;
 }
 
 //for inialization
@@ -15,6 +17,8 @@ interface LoginFormState {
 const useLoginContext = create<LoginFormState>((set) => ({
   zIsAuthenticated: isAuthenticated(),
   zSetIsAuthenticated: (zIsAuthenticated: boolean) => set({ zIsAuthenticated }),
+  zJwtToken: localStorage.getItem("authToken"),
+  zSetJwtToken: (zJwtToken: string) => set({ zJwtToken }),
 }));
 
 export default useLoginContext;

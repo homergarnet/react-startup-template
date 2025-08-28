@@ -3,10 +3,12 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { jwtDecode } from "jwt-decode";
-import useLoginContext from "../store/Login/useLoginContext";
-const useRedirect = () => {
-  const { zJwtToken, zIsAuthenticated } = useLoginContext();
+import useLoginContext from "@/store/login/useLoginContext";
 
+const useRedirect = () => {
+
+  const zJwtToken = useLoginContext((state) => state.zJwtToken);
+  const zIsAuthenticated = useLoginContext((state) => state.zIsAuthenticated);
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {

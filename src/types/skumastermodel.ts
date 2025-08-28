@@ -40,12 +40,3 @@ export interface SkuMasterModel {
   ForOrderingStatus?: number;
   ActionTblCol: string;
 }
-
-export interface SkuMasterModelState {
-  SkuMasterLists: SkuMasterModel[];
-}
-
-export interface UpdateWorksheetfileOrderingRequest {
-  SkuNumber: string;
-  ForOrderingStatus: number;
-}
